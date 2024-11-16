@@ -15,7 +15,7 @@ const App: React.FC = () => {
         <Route path="/login" element={<Login setToken={setToken} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
-          <Route path="/" element={<TaskList token={token || ''} />} />
+          <Route path="/tasks" element={<TaskList token={token || ''} />} />
         </Route>
       </Routes>
     </Router>

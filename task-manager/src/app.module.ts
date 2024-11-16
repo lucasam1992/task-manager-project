@@ -36,10 +36,16 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(DecodeTokenMiddleware)
-      .exclude({
-        path: 'auth/login',
-        method: RequestMethod.POST,
-      })
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .exclude(
+        {
+          path: 'auth/login',
+          method: RequestMethod.POST,
+        },
+        {
+          path: 'users/register',
+          method: RequestMethod.POST,
+        },
+      )
+      .forRoutes('users', 'tasks');
   }
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, TextField, Container, Typography, Box } from '@mui/material';
-import axios from 'axios';
+import { login } from '../../Services/AuthService';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginProps {
   setToken: (token: string) => void;
@@ -10,10 +11,14 @@ const Login: React.FC<LoginProps> = ({ setToken }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
+  const navigate = useNavigate();
+
   const handleLogin = async () => {
     try {
-      const response = await axios.post('/api/auth/login', { email, password });
-      setToken(response.data.access_token);
+      const response = await login({ email, password});
+      setToken(response.access_token);
+      
+      navigate('/tasks');
     } catch (error) {
       console.error('Login failed', error);
     }

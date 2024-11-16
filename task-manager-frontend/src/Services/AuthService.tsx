@@ -9,6 +9,6 @@ export const login = async (data: LoginData) => {
 };
 
 export const register = async (data: RegisterData) => {
-  const response = await api.post('/auth/register', data);
+  const response = await api.post('/users/register', data);
   return response.data;
 };

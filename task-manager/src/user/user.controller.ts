@@ -18,8 +18,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Post()
-  @UseGuards(JwtAuthGuard)
+  @Post('register')
   async createUser(@Body() createUserDto: CreateUserDto) {
     try {
       return await this.userService.create(createUserDto);

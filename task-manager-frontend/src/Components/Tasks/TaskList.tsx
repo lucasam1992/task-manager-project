@@ -1,31 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, CardContent, Typography, Box, Select, MenuItem, TextField } from '@mui/material';
-import axios from 'axios';
 import { Task } from '../../Interfaces/Task';
 import { TaskListProps } from '../../Interfaces/Task';
+import { getTasks, createTask, updateTask } from '../../Services/TaskService';
 
 
-const TaskList: React.FC<TaskListProps> = ({ token }) => {
+const TaskList: React.FC<TaskListProps> = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [newTask, setNewTask] = useState<{ title: string; description: string }>({ title: '', description: '' });
+  const [newTask, setNewTask] = useState<{ title: string; description: string }>({ title: '', description: ''});
 
   useEffect(() => {
     fetchTasks();
   }, []);
 
   const fetchTasks = async () => {
-    const response = await axios.get<Task[]>('/api/tasks', { headers: { Authorization: `Bearer ${token}` } });
-    setTasks(response.data);
+    const response = await getTasks();
+    setTasks(response);
   };
 
   const handleCreateTask = async () => {
-    await axios.post('/api/tasks', newTask, { headers: { Authorization: `Bearer ${token}` } });
-    fetchTasks();
+    try {
+      const createdTask = await createTask({ ...newTask, status: 'Backlog' });
+      setTasks((prevTasks) => [...prevTasks, createdTask]); 
+      setNewTask({ title: '', description: '' });
+      alert('Created Task!');
+    } catch (error) {
+      console.error('Error creating task:', error);
+    }
   };
 
   const handleStatusChange = async (id: number, status: Task['status']) => {
-    await axios.patch(`/api/tasks/${id}`, { status }, { headers: { Authorization: `Bearer ${token}` } });
-    fetchTasks();
+    try {
+      await updateTask(id, status);
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === id ? { ...task, status } : task
+        )
+      );
+    } catch (error) {
+      console.error('Error updating task status:', error);
+    }
   };
 
   return (
@@ -36,11 +50,11 @@ const TaskList: React.FC<TaskListProps> = ({ token }) => {
         <TextField label="Description" value={newTask.description} onChange={(e) => setNewTask({ ...newTask, description: e.target.value })} />
         <Button variant="contained" color="primary" onClick={handleCreateTask}>Create Task</Button>
       </Box>
-      {tasks.map(task => (
-        <Card key={task.id} sx={{ mb: 2 }}>
-          <CardContent>
-            <Typography variant="h6">{task.title}</Typography>
-            <Typography>{task.description}</Typography>
+      {tasks && tasks.length > 0 ? ( tasks.map((task) => (
+      <Card key={task.id} sx={{ mb: 2 }}>
+        <CardContent>
+          <Typography variant="h6">{task.title}</Typography>
+          <Typography>{task.description}</Typography>
             <Box display="flex" gap={2}>
               <Select
                 value={task.status}
@@ -52,9 +66,9 @@ const TaskList: React.FC<TaskListProps> = ({ token }) => {
                 <MenuItem value="Done">Done</MenuItem>
               </Select>
             </Box>
-          </CardContent>
-        </Card>
-      ))}
+        </CardContent>
+      </Card>
+      ))) : (<Typography variant="body1">No tasks available.</Typography>)}
     </Box>
   );
 };

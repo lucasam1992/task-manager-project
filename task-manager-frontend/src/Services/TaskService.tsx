@@ -1,8 +1,7 @@
 import api from './Api';
-import { TaskData } from '../Interfaces/Task';
+import { Task, TaskData } from '../Interfaces/Task';
 
-
-export const fetchTasks = async () => {
+export const getTasks = async () => {
   const response = await api.get('/tasks');
   return response.data;
 };
@@ -12,8 +11,8 @@ export const createTask = async (taskData: TaskData) => {
   return response.data;
 };
 
-export const updateTask = async (id: number, taskData: Partial<TaskData>) => {
-  const response = await api.patch(`/tasks/${id}`, taskData);
+export const updateTask = async (id: number, task: Task['status']) => {
+  const response = await api.patch(`/tasks/${id}`, task);
   return response.data;
 };
 

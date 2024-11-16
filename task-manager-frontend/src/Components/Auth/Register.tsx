@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 import { Button, TextField, Container, Typography, Box } from '@mui/material';
-import axios from 'axios';
+import { register } from '../../Services/AuthService';
+import { useNavigate } from 'react-router-dom';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
+  const navigate = useNavigate();
+
   const handleRegister = async () => {
     try {
-      await axios.post('/api/auth/register', { username, password });
+      await register({ email, username, password });
       alert('Registration successful!');
+      navigate('/login');
     } catch (error) {
-      console.error('Registration failed', error);
+      alert(error);
     }
   };
 
